@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#06101f">
+<title>HERMES AGENT OS v4.0 — NEURAL UPGRADE</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060e1d;
+  --bg2:#0b1b33;
+  --panel:#0f2340cc;
+  --panel-solid:#112745;
+  --accent:#00ffc6;
+  --accent2:#4d9eff;
+  --accent-soft:rgba(0,255,198,.12);
+  --border:rgba(0,255,198,.18);
+  --text:#eaf2ff;
+  --muted:#7f93b0;
+  --danger:#ff5a79;
+  --ok:#5cff9d;
+  --warn:#ffcc4d;
+  --shadow:0 20px 60px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Outfit',system-ui,sans-serif;
+  background:
+    radial-gradient(800px 400px at 20% -10%, rgba(0,255,198,.15), transparent),
+    radial-gradient(600px 400px at 90% 0%, rgba(77,158,255,.18), transparent),
+    radial-gradient(900px 600px at 50% 120%, rgba(0,255,198,.08), transparent),
+    linear-gradient(180deg, var(--bg2), var(--bg));
+  color:var(--text);
+  min-height:100vh;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{cursor:pointer;font-family:inherit}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* TOPBAR */
+.topbar{
+  height:68px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  background:rgba(6,16,31,.85);backdrop-filter:blur(20px) saturate(1.2);
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:30;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;
+  background:conic-gradient(from 0deg, var(--accent), var(--accent2), var(--accent));
+  display:grid;place-items:center;color:#00120e;font-weight:900;letter-spacing:1px;
+  box-shadow:0 0 20px var(--accent-soft);
+}
+.brand-text b{letter-spacing:3px;color:var(--accent);font-size:15px}
+.brand-text small{display:block;font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.pill{
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  padding:7px 12px;border-radius:999px;font-size:11px;color:var(--muted);display:flex;gap:8px;align-items:center
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.icon-btn{
+  width:38px;height:38px;border-radius:11px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--text);display:grid;place-items:center;font-size:16px;transition:.2s
+}
+.icon-btn:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+
+/* LAYOUT */
+.app{
+  display:grid;grid-template-columns:280px 1fr 320px;
+  gap:14px;padding:14px;max-width:1600px;margin:0 auto;
+  height:calc(100vh - 68px);
+}
+.panel{
+  background:var(--panel);backdrop-filter:blur(18px) saturate(1.1);
+  border:1px solid var(--border);border-radius:18px;
+  display:flex;flex-direction:column;overflow:hidden;min-width:0;
+  box-shadow:var(--shadow);
+}
+.panel-head{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;letter-spacing:1.5px;font-weight:700;color:var(--accent);
+}
+.panel-body{padding:14px;overflow:auto;flex:1}
+
+/* LEFT */
+.stat-card{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px
+}
+.stat-row{display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.08)}
+.stat-row:last-child{border:0}
+.k{color:var(--muted)} .v{color:var(--text);font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mini{
+  background:#071426;border:1px solid var(--border);border-radius:12px;padding:12px
+}
+.mini strong{font-size:20px;color:var(--accent);display:block}
+.mini span{font-size:10px;color:var(--muted);letter-spacing:.8px}
+
+.section{font-size:10px;color:var(--muted);letter-spacing:2px;margin:18px 0 10px;font-weight:700}
+.action{
+  width:100%;text-align:left;padding:12px 12px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid transparent;
+  color:var(--text);font-size:12.5px;transition:.18s;display:flex;gap:10px;align-items:center;margin-bottom:8px
+}
+.action:hover{background:var(--accent-soft);border-color:var(--border);color:var(--accent);transform:translateY(-1px)}
+.action:active{transform:scale(.98)}
+.model-select{
+  width:100%;background:#071426;color:var(--text);
+  border:1px solid var(--border);border-radius:10px;padding:10px;font-size:12px
+}
+
+/* CHAT */
+.chat{position:relative}
+.chat-log{
+  flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:16px;
+  scroll-behavior:smooth;
+}
+.bubble-wrap{max-width:88%;display:flex;flex-direction:column;gap:6px;animation:in .25s ease}
+.bubble-wrap.user{align-self:flex-end;align-items:flex-end}
+.bubble-wrap.agent{align-self:flex-start}
+.tag{font-size:9px;letter-spacing:1px;font-weight:700;color:var(--accent)}
+.user .tag{color:var(--muted)}
+.bubble{
+  padding:13px 14px;border-radius:16px;font-size:13.5px;line-height:1.65;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+  border:1px solid var(--border);
+}
+.agent .bubble{background:linear-gradient(180deg, var(--accent-soft), rgba(0,255,198,.05))}
+.user .bubble{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.12)}
+.bubble code{background:rgba(0,0,0,.4);padding:2px 6px;border-radius:6px;color:var(--accent);font-family:'JetBrains Mono';font-size:12px}
+.bubble pre{background:#050d1b;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:auto;margin:8px 0}
+.time{font-size:10px;color:var(--muted)}
+.tools{display:flex;gap:6px;opacity:0;transition:.15s}
+.bubble-wrap:hover .tools{opacity:1}
+.tbtn{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:9px;padding:4px 8px;border-radius:6px}
+.tbtn:hover{color:var(--accent);background:var(--accent-soft)}
+
+.typing{display:inline-flex;gap:5px;padding:12px 16px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--border)}
+.typing i{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:b 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* COMPOSER */
+.composer{
+  padding:12px;background:rgba(5,14,28,.9);border-top:1px solid var(--border);
+  backdrop-filter:blur(10px)
+}
+.composer-box{
+  display:flex;align-items:flex-end;gap:8px;
+  background:#050e1c;border:1px solid var(--border);border-radius:14px;padding:8px;transition:.2s
+}
+.composer-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#inp{
+  flex:1;background:transparent;border:0;outline:0;color:#fff;
+  font-size:13.5px;padding:8px 0;max-height:120px;resize:none;line-height:1.5
+}
+.send{
+  background:var(--accent);color:#002019;border:0;border-radius:10px;
+  padding:10px 14px;font-weight:800;letter-spacing:.8px;transition:.15s
+}
+.send:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.mic{
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--accent);border-radius:10px;padding:9px 11px;font-size:16px
+}
+.mic.on{color:var(--danger);border-color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.1)}}
+.hints{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:8px;letter-spacing:.5px}
+
+/* RIGHT */
+.browser-head{display:flex;gap:8px;margin-bottom:10px}
+.browser-input{
+  flex:1;background:#071426;border:1px solid var(--border);border-radius:9px;
+  padding:8px 10px;color:#fff;font-size:11px;outline:0
+}
+.iframe-wrap{
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  background:#050d1b;height:260px;position:relative
+}
+.iframe-wrap iframe{width:100%;height:100%;border:0;background:#fff}
+.placeholder{
+  position:absolute;inset:0;display:grid;place-items:center;
+  text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:16px
+}
+.tabs{display:flex;gap:6px;margin:12px 0 10px}
+.tab{
+  flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--muted);font-size:11px;text-align:center
+}
+.tab.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.activity{border-top:1px dashed rgba(255,255,255,.08);margin-top:10px;padding-top:10px}
+.act{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;color:var(--muted)}
+.act b{color:var(--text);font-size:11px;display:block}
+.act time{color:var(--accent);font-size:9px}
+
+/* DRAWER */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:40;opacity:0;pointer-events:none;transition:.3s}
+.backdrop.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;right:0;top:0;height:100vh;width:min(360px,92vw);
+  background:#0a1a31;border-left:1px solid var(--border);z-index:50;
+  transform:translateX(105%);transition:.35s cubic-bezier(.4,0,.2,1);padding:20px;overflow:auto
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px;color:var(--accent);font-weight:700;letter-spacing:1px}
+.swatch-row{display:flex;flex-wrap:wrap;gap:10px}
+.swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;transition:.15s}
+.swatch.active{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.15);transform:scale(1.1)}
+.range{width:100%}
+
+/* COMMAND PALETTE */
+.palette{
+  position:fixed;top:18%;left:50%;transform:translate(-50%,-10px) scale(.98);
+  width:min(600px,92vw);background:#0c1d37;border:1px solid var(--border);
+  border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.6);z-index:60;
+  opacity:0;pointer-events:none;transition:.25s;overflow:hidden
+}
+.palette.open{opacity:1;pointer-events:auto;transform:translate(-50%,0) scale(1)}
+.palette input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--border);padding:16px;color:#fff;font-size:14px;outline:0}
+.p-list{max-height:320px;overflow:auto}
+.p-item{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;cursor:pointer}
+.p-item:hover{background:var(--accent-soft);color:var(--accent)}
+.kbd{background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:6px;padding:2px 6px;font-size:10px}
+
+/* TOAST */
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);
+  background:#102a4a;border:1px solid var(--accent);color:#fff;
+  padding:12px 16px;border-radius:12px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:70
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.app{grid-template-columns:240px 1fr}.panel:last-child{display:none}}
+@media(max-width:720px){
+  body{overflow:auto}
+  .app{display:flex;flex-direction:column;height:auto;padding:8px}
+  .panel{border-radius:16px}
+  .chat{order:-1;min-height:72vh}
+  .chat-log{min-height:52vh}
+  .top-actions .pill{ display:none }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">H</div>
+    <div class="brand-text"><b>HERMES AGENT OS</b><small>v4.0 NEURAL • UPGRADED</small></div>
+  </div>
+  <div class="top-actions">
+    <div class="pill"><span class="dot"></span><span id="clock">--:--:--</span> <span style="opacity:.6">|</span> <span id="latency">42ms</span></div>
+    <button class="icon-btn" id="cmdk" title="Command Palette (Ctrl+K)">⌘</button>
+    <button class="icon-btn" id="openSet">⚙</button>
+  </div>
+</header>
+
+<div class="app" id="app">
+
+  <!-- LEFT -->
+  <aside class="panel" id="left">
+    <div class="panel-head">◈ AGENT CORE <span class="mono" style="color:var(--muted)">LIVE</span></div>
+    <div class="panel-body">
+      <div class="stat-card">
+        <div class="stat-row"><span class="k">Agent</span><span class="v">Hermes Prime</span></div>
+        <div class="stat-row"><span class="k">Model</span><span class="v"><select id="model" class="model-select"><option>hermes-4-flash</option><option>hermes-4-pro</option><option>hermes-4-reason</option></select></span></div>
+        <div class="stat-row"><span class="k">Status</span><span class="v" style="color:var(--ok)">● Neural Online</span></div>
+        <div class="stat-row"><span class="k">Memory</span><span class="v" id="mem">0 msgs</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="mini"><strong id="mcount">0</strong><span>MESSAGES</span></div>
+        <div class="mini"><strong id="stime">00:00</strong><span>SESSION</span></div>
+      </div>
+
+      <div class="section">QUICK ACTIONS</div>
+      <button class="action" data-c="Analyze my system and show optimization tips">⚡ System Diagnosis</button>
+      <button class="action" data-c="Create a daily plan with focus blocks">📅 Deep Work Plan</button>
+      <button class="action" data-c="Explain your new v4 capabilities in Hindi">✨ What's New v4</button>
+      <button class="action" data-c="Write a viral tweet thread about AI agents">✍️ Generate Content</button>
+      <button class="action" data-c="Open browser and search latest AI news">🌐 Browse Web</button>
+
+      <div class="section">TEMPERATURE</div>
+      <input id="temp" type="range" min="0" max="100" value="72" class="range">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>Precise</span><span id="tempV">0.72</span><span>Creative</span></div>
+
+      <div class="section">PROMPT LAB</div>
+      <button class="action" data-c="/image a cyberpunk city at night">🎨 /image prompt</button>
+      <button class="action" data-c="/code a todo app in React">💻 /code generator</button>
+      <button class="action" data-c="/summarize this conversation">🧠 /summarize</button>
+    </div>
+  </aside>
+
+  <!-- CENTER CHAT -->
+  <main class="panel chat" id="chatPanel">
+    <div class="panel-head">◎ NEURAL CHAT <div style="display:flex;gap:6px"><button class="tbtn" id="exportBtn">EXPORT</button><button class="tbtn" id="clearBtn">CLEAR</button></div></div>
+    <div class="chat-log" id="log"></div>
+    <div class="composer">
+      <div class="composer-box">
+        <textarea id="inp" rows="1" placeholder="Type command, or press 🎤…  ( /help for commands )"></textarea>
+        <button class="mic" id="mic">🎤</button>
+        <button class="send" id="send">SEND</button>
+      </div>
+      <div class="hints"><span id="vstatus">ENTER ↵ SEND • SHIFT+ENTER NEW LINE • CTRL+K COMMANDS</span><span class="mono">↑↓ HISTORY • ESC FOCUS</span></div>
+    </div>
+  </main>
+
+  <!-- RIGHT -->
+  <aside class="panel" id="right">
+    <div class="panel-head">◉ LIVE TOOLS</div>
+    <div class="panel-body">
+      <div class="browser-head">
+        <input id="burl" class="browser-input mono" placeholder="https://...">
+        <button class="tbtn" id="goBtn" style="padding:8px 12px">GO</button>
+      </div>
+      <div class="iframe-wrap" id="iframeWrap">
+        <div class="placeholder" id="ph"><span style="font-size:28px">🌐</span><br><b style="color:var(--text)">Browser Ready</b><br>Type URL and press GO<br>or use <code>/browse query</code></div>
+        <iframe id="frame" class="hidden" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="act">Activity</div>
+        <div class="tab" data-tab="term">Terminal</div>
+        <div class="tab" data-tab="files">Files</div>
+      </div>
+
+      <div id="tab-act">
+        <div class="activity" id="activity"></div>
+      </div>
+      <div id="tab-term" class="hidden">
+        <div class="mono" style="background:#050d1b;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:11px;line-height:1.6;min-height:180px">
+          <div style="color:var(--accent)">hermes@neural:~$ <span style="color:#fff">neofetch</span></div>
+          <div>OS: Hermes v4.0<br>Uptime: <span id="up2">0m</span><br>Model: <span id="model2">hermes-4-flash</span><br>Accent: <span id="accent2">#00ffc6</span></div>
+          <div style="margin-top:10px;color:var(--accent)">hermes@neural:~$ <span style="color:#fff" id="termLine">_</span></div>
+        </div>
+      </div>
+      <div id="tab-files" class="hidden">
+        <div style="font-size:12px;color:var(--muted)">Drop files here or click</div>
+        <div id="drop" style="margin-top:8px;border:1px dashed var(--border);border-radius:10px;padding:18px;text-align:center;font-size:12px;color:var(--muted)">📁 Drag & Drop<br><small>images, pdf, code</small></div>
+        <div id="fileList" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- SETTINGS DRAWER -->
+<div class="backdrop" id="backdrop"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><span>⚙ SETTINGS v4</span><button id="close" style="background:transparent;border:0;color:var(--danger);font-size:20px">✕</button></div>
+
+  <div class="section">DISPLAY MODE</div>
+  <button class="action" id="focusBtn">👁️ Focus Mode (Shift+F)</button>
+  <button class="action" id="leftBtn">📊 Left Panel Toggle</button>
+  <button class="action" id="rightBtn">🌐 Right Panel Toggle</button>
+
+  <div class="section">ACCENT NEON</div>
+  <div class="swatch-row" id="swatches"></div>
+
+  <div class="section">VOICE & TTS</div>
+  <button class="action" id="langBtn">🗣️ Language: Hindi</button>
+  <button class="action" id="autoBtn">⚡ Auto-send on speech: Off</button>
+  <button class="action" id="ttsBtn">🔊 Speak Replies: Off</button>
+  <select id="voiceSel" class="model-select" style="margin-top:8px"><option>Loading voices…</option></select>
+
+  <div class="section">PRIVACY</div>
+  <button class="action" id="export2">⇩ Export Chat (.md)</button>
+  <button class="action" id="clear2" style="color:var(--danger)">⌫ Clear All Memory</button>
+  <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">All data stored locally in browser. No server.</div>
+</div>
+
+<!-- COMMAND PALETTE -->
+<div class="palette" id="palette">
+  <input id="pInput" placeholder="Type command…  ( /help, /clear, /theme, /focus )">
+  <div class="p-list" id="pList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const STORAGE="hermes.v4";
+  const ACCENTS=["#00ffc6","#4d9eff","#a78bfa","#ff6b9d","#ffcc4d","#5cff9d","#ff7a45"];
+
+  // STATE
+  let msgs=[], accent="#00ffc6", lang="hi-IN", focus=false, tts=false, autoSend=false;
+  let hist=[], hIdx=-1, start=Date.now(), rec=null, fileStore=[];
+  const log=$("log"), inp=$("inp");
+
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const md=t=>esc(t).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+
+  function applyAccent(c){
+    accent=c;
+    const hex=c.replace('#',''); const n=parseInt(hex,16);
+    const r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+    document.documentElement.style.setProperty('--accent',c);
+    document.documentElement.style.setProperty('--accent-soft',`rgba(${r},${g},${b},.14)`);
+    document.documentElement.style.setProperty('--border',`rgba(${r},${g},${b},.22)`);
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active', s.dataset.c===c));
+    $('accent2').textContent=c;
+  }
+  function toast(m,err){
+    const t=$('toast'); t.textContent=m; t.style.borderColor=err?'var(--danger)':'var(--accent)'; t.classList.add('show');
+    clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2200);
+  }
+  function save(){
+    try{localStorage.setItem(STORAGE,JSON.stringify({msgs,accent,lang,focus,tts,autoSend,temp:$('temp').value,model:$('model').value}))}catch{}
+  }
+  function load(){
+    try{
+      const o=JSON.parse(localStorage.getItem(STORAGE)||'null'); if(!o) return false;
+      msgs=o.msgs||[]; accent=o.accent||'#00ffc6'; lang=o.lang||'hi-IN'; focus=!!o.focus; tts=!!o.tts; autoSend=!!o.autoSend;
+      if(o.temp) $('temp').value=o.temp;
+      if(o.model) $('model').value=o.model;
+      return true;
+    }catch{return false}
+  }
+
+  // RENDER
+  function renderOne(m,append=true){
+    const w=document.createElement('div'); w.className='bubble-wrap '+m.role;
+    const tag=document.createElement('div'); tag.className='tag'; tag.textContent=m.role==='user'?'YOU • USER':'🦅 HERMES • '+m.model;
+    const b=document.createElement('div'); b.className='bubble'; b.innerHTML=md(m.text);
+    if(m.text.includes('```')){
+      b.innerHTML=b.innerHTML.replace(/```([\s\S]*?)```/g,( _,code)=>`<pre><code>${esc(code)}</code></pre>`);
+    }
+    const meta=document.createElement('div'); meta.style.display='flex'; meta.style.justifyContent='space-between'; meta.style.alignItems='center';
+    const time=document.createElement('div'); time.className='time'; time.textContent=m.time;
+    const tools=document.createElement('div'); tools.className='tools';
+    const copy=document.createElement('button'); copy.className='tbtn'; copy.textContent='COPY';
+    copy.onclick=()=>{navigator.clipboard.writeText(m.text).then(()=>toast('Copied'));};
+    const speakBtn=document.createElement('button'); speakBtn.className='tbtn'; speakBtn.textContent='SPEAK';
+    speakBtn.onclick=()=>speak(m.text);
+    tools.append(copy,speakBtn);
+    meta.append(time,tools);
+    w.append(tag,b,meta);
+    if(append) log.appendChild(w);
+    return w;
+  }
+  function renderAll(){ log.innerHTML=''; msgs.forEach(m=>renderOne(m)); log.scrollTop=log.scrollHeight; updateCounts(); }
+  function updateCounts(){ $('mcount').textContent=msgs.length; $('mem').textContent=msgs.length+' msgs'; }
+
+  function addActivity(t){
+    const el=document.createElement('div'); el.className='act';
+    el.innerHTML=`<time class="mono">${new Date().toLocaleTimeString()}</time><b>${esc(t)}</b>`;
+    $('activity').prepend(el);
+    while($('activity').children.length>6) $('activity').lastChild.remove();
+  }
+  function addMsg(text,role){
+    const m={role,text,time:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),model:$('model').value};
+    msgs.push(m); renderOne(m); log.scrollTop=log.scrollHeight; updateCounts(); save();
+    if(role==='agent' && tts) speak(text);
+  }
+
+  // TYPING
+  let typing=null;
+  function showType(){
+    if(typing) return;
+    typing=document.createElement('div'); typing.className='bubble-wrap agent';
+    typing.innerHTML=`<div class="tag">🦅 HERMES • THINKING</div><div class="typing"><i></i><i></i><i></i></div>`;
+    log.appendChild(typing); log.scrollTop=log.scrollHeight;
+  }
+  function hideType(){ if(typing){typing.remove(); typing=null;} }
+
+  // BRAIN v4
+  const BRAIN=[
+    {re:/what'?s new|v4|upgrade|नया क्या/i,out:`**v4.0 NEURAL UPGRADE — क्या नया है?**
+• ⚡ Streaming responses + markdown code blocks
+• 🌐 Live browser with iframe + GO
+• 🎙️ Auto language detect (HI/EN) + TTS voice selector
+• ⌘ Command Palette (Ctrl+K) + /commands
+• 📁 Drag-drop files + preview
+• 🎨 7 neon accents + focus mode + panel toggles
+• 🧠 Better memory + temperature slider + 3 models
+• 📴 100% offline, localStorage only`},
+    {re:/system status|diagnos/i,out:()=>`**DIAGNOSTICS v4**
+• Model: **${$('model').value}**
+• Temp: ${$('temp').value/100}
+• Accent: ${accent}
+• Messages: ${msgs.length}
+• Uptime: ${Math.floor((Date.now()-start)/1000)}s
+• Voice: ${rec?'Ready':'No SR'}
+• Latency: ~${Math.floor(30+Math.random()*40)}ms (simulated)`},
+    {re:/browse|search/i,out:(q)=>{const query=q||'AI agents 2026'; $('burl').value='https://duckduckgo.com/?q='+encodeURIComponent(query); goBrowse(); return `🌐 Browsing **${query}** — check right panel.`}},
+  ];
+  function genReply(t){
+    const lower=t.toLowerCase();
+    for(const b of BRAIN) if(b.re.test(lower)) return typeof b.out==='function'?b.out(t):b.out;
+    if(t.startsWith('/')) return null;
+    if(lower.includes('plan')||lower.includes('task')){
+      return `**Focus Plan (v4)**
+1. **Capture** → एक वाक्य में लक्ष्य
+2. **Slice** → 3 छोटे टास्क (25m)
+3. **Do** → सबसे छोटा शुरू करो
+4. **Review** → /summarize से चेक
+बोलो किस प्रोजेक्ट पर प्लान बनाऊँ?`;
+    }
+    return `Command logged: **${t.slice(0,120)}**\n\nv4 में अब live tools, file drop, और streaming reply है। \nTry: \`/help\` • \`/image city\` • \`/code app\` • \`/browse AI news\``;
+  }
+
+  // SLASH
+  function handleSlash(cmd){
+    const [name,...rest]=cmd.slice(1).split(/\s+/); const arg=rest.join(' ');
+    switch(name.toLowerCase()){
+      case 'help':
+        addMsg(`**/ COMMANDS v4**
+/help — this
+/clear — clear chat
+/export — export .md
+/theme #00ffc6 — accent
+/focus — focus mode
+/browse <query> — browse
+/image <prompt> — image idea
+/code <what> — code scaffold
+/summarize — summarize chat
+/tts on/off — speech`, 'agent'); return true;
+      case 'clear': clearChat(); return true;
+      case 'export': exportChat(); return true;
+      case 'focus': toggleFocus(); return true;
+      case 'theme':
+        if(/^#?[0-9a-f]{6}$/i.test(arg)){ const h=arg.startsWith('#')?arg:'#'+arg; applyAccent(h); save(); addMsg(`Theme → ${h}`, 'agent'); } else addMsg('Usage: /theme #00ffc6', 'agent'); return true;
+      case 'browse': $('burl').value= arg.startsWith('http')?arg:'https://duckduckgo.com/?q='+encodeURIComponent(arg||'AI'); goBrowse(); addMsg(`🌐 Opening ${$('burl').value}`, 'agent'); return true;
+      case 'image': addMsg(`🎨 **Image Prompt:** "${arg}"\n\nUse: \n- Midjourney / DALL·E prompt:\n\`cyberpunk ${arg}, neon, ultra detailed, 8k\``, 'agent'); return true;
+      case 'code': addMsg(`💻 **Code Scaffold: ${arg}**\n\n\`\`\`jsx\n// ${arg}\nfunction App(){\n  const [count,setCount]=useState(0)\n  return <button onClick={()=>setCount(c=>c+1)}>{count}</button>\n}\n\`\`\``, 'agent'); return true;
+      case 'summarize':
+        const sum=msgs.slice(-10).map(m=>`${m.role}: ${m.text.slice(0,80)}`).join('\\n'); addMsg(`**Summary (last ${Math.min(10,msgs.length)})**\\n${sum||'No msgs'}`, 'agent'); return true;
+      case 'tts':
+        tts=arg==='on'?true:arg==='off'?false:!tts; updateVoiceUI(); save(); addMsg(`TTS ${tts?'On':'Off'}`, 'agent'); return true;
+      default: addMsg(`Unknown /${name}. Try /help`, 'agent'); return true;
+    }
+  }
+
+  // SEND FLOW with streaming
+  let busy=false;
+  function streamText(full, done){
+    let i=0; const chunk=()=>{ if(i>=full.length){ done&&done(); return; } const el=log.lastChild?.querySelector('.bubble'); if(el){ el.innerHTML=md(full.slice(0,i+=3)); } log.scrollTop=log.scrollHeight; requestAnimationFrame(()=>setTimeout(chunk,16)); };
+    chunk();
+  }
+  function send(raw){
+    const text=(raw!==undefined?raw:inp.value).trim(); if(!text||busy) return;
+    inp.value=''; hIdx=-1; hist.push(text); if(hist.length>60) hist=hist.slice(-60);
+    addMsg(text,'user'); addActivity('User command');
+    if(navigator.vibrate) navigator.vibrate(10);
+    if(text.startsWith('/')){ handleSlash(text); return; }
+    busy=true; showType();
+    const delay=400+Math.random()*500;
+    setTimeout(()=>{
+      hideType();
+      const reply=genReply(text)||'...';
+      addMsg('', 'agent');
+      const last=msgs[msgs.length-1];
+      let idx=0;
+      const typer=()=>{
+        const cur=reply.slice(0,idx+=4);
+        const b=log.lastChild.querySelector('.bubble'); if(b) b.innerHTML=md(cur);
+        if(idx<reply.length){ requestAnimationFrame(()=>setTimeout(typer,18)); log.scrollTop=log.scrollHeight; } else { busy=false; save(); addActivity('Agent replied'); }
+      };
+      typer();
+    },delay);
+  }
+
+  // UI BINDINGS
+  $('send').onclick=()=>send();
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); return; }
+    if(e.key==='ArrowUp' && inp.value===''){ if(!hist.length) return; if(hIdx===-1) hIdx=hist.length; hIdx=Math.max(0,hIdx-1); inp.value=hist[hIdx]; e.preventDefault(); }
+    else if(e.key==='ArrowDown' && hIdx>=0){ hIdx++; if(hIdx>=hist.length){hIdx=-1; inp.value='';} else inp.value=hist[hIdx]; e.preventDefault(); }
+  });
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>send(b.dataset.c));
+  $('clearBtn').onclick=clearChat;
+  $('exportBtn').onclick=exportChat;
+  $('export2').onclick=()=>{exportChat(); closeDrawer();};
+  $('clear2').onclick=()=>{ if(confirm('Clear all memory?')){clearChat(); closeDrawer();} };
+
+  function clearChat(){ msgs=[]; log.innerHTML=''; updateCounts(); addMsg('Memory cleared. Hermes v4 ready. Type /help', 'agent'); addActivity('Cleared'); save(); toast('Cleared'); }
+  function exportChat(){
+    if(!msgs.length){toast('Nothing to export',true);return;}
+    const mdLines=['# Hermes v4 Export',new Date().toString(),''].concat(msgs.map(m=>`### ${m.role.toUpperCase()} [${m.time}]\\n${m.text}\\n`));
+    const blob=new Blob([mdLines.join('\\n')],{type:'text/markdown'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`hermes-v4-${Date.now()}.md`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast('Exported .md'); addActivity('Exported');
+  }
+
+  // BROWSER
+  function goBrowse(){
+    const url=$('burl').value.trim(); if(!url) return;
+    const f=$('frame'), ph=$('ph');
+    try{ new URL(url); f.src=url; f.classList.remove('hidden'); ph.style.display='none'; addActivity('Browsed: '+url); }
+    catch{ toast('Invalid URL',true); }
+  }
+  $('goBtn').onclick=goBrowse;
+  $('burl').addEventListener('keydown',e=>{ if(e.key==='Enter') goBrowse(); });
+
+  // TABS
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); t.classList.add('active');
+    $('tab-act').classList.toggle('hidden', t.dataset.tab!=='act');
+    $('tab-term').classList.toggle('hidden', t.dataset.tab!=='term');
+    $('tab-files').classList.toggle('hidden', t.dataset.tab!=='files');
+  });
+
+  // DRAWER
+  const drawer=$('drawer'), backdrop=$('backdrop');
+  function openDrawer(o){ drawer.classList.toggle('open',o); backdrop.classList.toggle('open',o); }
+  $('openSet').onclick=()=>openDrawer(true);
+  $('close').onclick=()=>openDrawer(false);
+  backdrop.onclick=()=>openDrawer(false);
+
+  // SWATCHES
+  ACCENTS.forEach(c=>{
+    const b=document.createElement('button'); b.className='swatch'; b.style.background=c; b.dataset.c=c;
+    b.onclick=()=>{applyAccent(c); save(); toast('Accent '+c);}; $('swatches').appendChild(b);
+  });
+
+  // FOCUS
+  function toggleFocus(){
+    focus=!focus; document.body.classList.toggle('focus',focus);
+    document.getElementById('app').style.gridTemplateColumns=focus?'1fr':'';
+    $('left').style.display=focus?'none':''; $('right').style.display=focus?'none':'';
+    toast(focus?'Focus Mode On':'Focus Off');
+    save();
+  }
+  $('focusBtn').onclick=()=>{toggleFocus(); openDrawer(false);};
+  $('leftBtn').onclick=()=>{$('left').classList.toggle('hidden'); toast('Left toggled');};
+  $('rightBtn').onclick=()=>{$('right').classList.toggle('hidden'); toast('Right toggled');};
+
+  // VOICE
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    rec=new SR(); rec.continuous=false; rec.interimResults=true; rec.lang=lang;
+    rec.onstart=()=>{$('mic').classList.add('on'); $('vstatus').textContent='🎙️ Listening… बोलिए';};
+    rec.onresult=e=>{
+      let final=''; for(let i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) final+=e.results[i][0].transcript; else $('vstatus').textContent='…'+e.results[i][0].transcript; }
+      if(final){ inp.value=(inp.value+' '+final).trim(); if(autoSend) setTimeout(()=>send(),200); }
+    };
+    rec.onend=()=>{$('mic').classList.remove('on'); $('vstatus').textContent='ENTER ↵ SEND • SHIFT+ENTER NEW LINE • CTRL+K COMMANDS'; inp.focus();};
+    rec.onerror=e=>{toast('Mic: '+e.error,true); $('mic').classList.remove('on');};
+    $('mic').onclick=()=>{ try{rec.lang=lang; rec.start();}catch{toast('Already listening',true);} };
+  } else {
+    $('mic').onclick=()=>toast('Voice not supported',true);
+  }
+  function updateVoiceUI(){
+    $('langBtn').textContent='🗣️ Language: '+(lang==='hi-IN'?'Hindi':'English');
+    $('autoBtn').textContent='⚡ Auto-send: '+(autoSend?'On':'Off');
+    $('ttsBtn').textContent='🔊 Speak Replies: '+(tts?'On':'Off');
+  }
+  $('langBtn').onclick=()=>{ lang=lang==='hi-IN'?'en-IN':'hi-IN'; if(rec) rec.lang=lang; updateVoiceUI(); save(); };
+  $('autoBtn').onclick=()=>{ autoSend=!autoSend; updateVoiceUI(); save(); };
+  $('ttsBtn').onclick=()=>{ tts=!tts; updateVoiceUI(); save(); toast('TTS '+(tts?'On':'Off')); };
+
+  // TTS voices
+  function loadVoices(){
+    const vs=speechSynthesis.getVoices(); const sel=$('voiceSel'); sel.innerHTML='';
+    vs.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=v.name+' ('+v.lang+')'; sel.appendChild(o); });
+  }
+  if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=loadVoices; loadVoices(); }
+  function speak(text){
+    if(!('speechSynthesis' in window)) return;
+    const u=new SpeechSynthesisUtterance(text.replace(/[*`#]/g,'').slice(0,400));
+    const sel=$('voiceSel'); const voices=speechSynthesis.getVoices();
+    const idx=parseInt(sel.value||'0'); if(voices[idx]) u.voice=voices[idx];
+    u.lang=lang; u.rate=1.05; speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }
+
+  // TEMP
+  $('temp').addEventListener('input',e=>{ $('tempV').textContent=(e.target.value/100).toFixed(2); save(); });
+  $('model').addEventListener('change',e=>{ $('model2').textContent=e.target.value; save(); });
+
+  // FILES drag drop
+  const drop=$('drop');
+  drop.addEventListener('click',()=>{ const inpF=document.createElement('input'); inpF.type='file'; inpF.multiple=true; inpF.onchange=e=>handleFiles(e.target.files); inpF.click(); });
+  drop.addEventListener('dragover',e=>{e.preventDefault(); drop.style.borderColor='var(--accent)';});
+  drop.addEventListener('dragleave',()=>drop.style.borderColor='var(--border)');
+  drop.addEventListener('drop',e=>{e.preventDefault(); drop.style.borderColor='var(--border)'; handleFiles(e.dataTransfer.files);});
+  function handleFiles(files){
+    for(const f of files){
+      fileStore.push(f.name);
+      const div=document.createElement('div'); div.className='act'; div.innerHTML=`<b>📄 ${esc(f.name)}</b> ${(f.size/1024).toFixed(1)}KB • ${f.type||'file'}`;
+      $('fileList').prepend(div);
+      addMsg(`File attached: **${f.name}** (${(f.size/1024).toFixed(1)}KB) — ready to analyze.`, 'user');
+    }
+    addActivity(`${files.length} file(s) added`);
+  }
+
+  // COMMAND PALETTE
+  const palette=$('palette'), pInput=$('pInput'), pList=$('pList');
+  const CMDS=[
+    {k:'/help',d:'Show commands'},
+    {k:'/clear',d:'Clear chat'},
+    {k:'/export',d:'Export markdown'},
+    {k:'/focus',d:'Toggle focus mode'},
+    {k:'/theme #00ffc6',d:'Change accent'},
+    {k:'/browse AI news',d:'Open browser'},
+    {k:'/image cyber city',d:'Image prompt'},
+    {k:'/code todo app',d:'Code scaffold'},
+    {k:'/summarize',d:'Summarize chat'},
+    {k:'System Status',d:'Diagnostics'},
+  ];
+  function openPalette(o){ palette.classList.toggle('open',o); backdrop.classList.toggle('open',o); if(o){ pInput.focus(); renderPalette(''); } }
+  function renderPalette(q){
+    pList.innerHTML=''; CMDS.filter(c=>c.k.toLowerCase().includes(q.toLowerCase())||c.d.toLowerCase().includes(q.toLowerCase())).forEach(c=>{
+      const div=document.createElement('div'); div.className='p-item'; div.innerHTML=`<span><b>${esc(c.k)}</b> — ${esc(c.d)}</span><span class="kbd">↵</span>`;
+      div.onclick=()=>{ openPalette(false); send(c.k.startsWith('/')?c.k:c.k); };
+      pList.appendChild(div);
+    });
+  }
+  $('cmdk').onclick=()=>openPalette(true);
+  pInput.addEventListener('input',e=>renderPalette(e.target.value));
+  pInput.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const first=pList.firstChild; if(first) first.click(); } if(e.key==='Escape') openPalette(false); });
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); openPalette(!palette.classList.contains('open')); }
+    if(e.key==='Escape' && palette.classList.contains('open')) openPalette(false);
+    if(e.key==='/' && document.activeElement!==inp && !e.ctrlKey && !e.metaKey){ e.preventDefault(); inp.focus(); }
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='f'){ e.preventDefault(); toggleFocus(); }
+  });
+
+  // CLOCKS
+  setInterval(()=>{ $('clock').textContent=new Date().toLocaleTimeString([], {hour12:false}); $('latency').textContent=Math.floor(28+Math.random()*45)+'ms'; },1000);
+  setInterval(()=>{ const s=Math.floor((Date.now()-start)/1000); $('stime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); $('up2').textContent=Math.floor(s/60)+'m'; },1000);
+
+  // BOOT
+  (function boot(){
+    const had=load(); applyAccent(accent); updateVoiceUI(); $('tempV').textContent=(($('temp').value||72)/100).toFixed(2); $('model2').textContent=$('model').value;
+    if(had && msgs.length) renderAll(); else { addMsg('🦅 **HERMES v4.0 NEURAL ONLINE**\n\nनमस्ते! मैं upgraded हूँ:\n• Streaming + markdown + code blocks\n• Live browser + terminal + file drop\n• Command palette Ctrl+K\n• 7 neon themes + TTS voices\n\nType `/help` या 🎤 दबाओ।', 'agent'); }
+    if(focus) toggleFocus();
+    addActivity('System booted v4.0');
+    log.scrollTop=log.scrollHeight;
+  })();
+
+  function clearDrawerClose(){ /* helper */ }
+  function closeDrawer(){ openDrawer(false); }
+
+})();
+</script>
+</body>
+</html>
